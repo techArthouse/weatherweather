@@ -21,6 +21,8 @@
 		7145C9F72A8AE92F00364800 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7145C9F62A8AE92F00364800 /* NetworkService.swift */; };
 		7145C9F92A8AEC0400364800 /* SearchWeatherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7145C9F82A8AEC0400364800 /* SearchWeatherView.swift */; };
 		7145C9FC2A8AF12600364800 /* MockNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7145C9FB2A8AF12600364800 /* MockNetworkService.swift */; };
+		7145C9FE2A8B10FD00364800 /* ImageFetchingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7145C9FD2A8B10FD00364800 /* ImageFetchingService.swift */; };
+		7145CA002A8B1F6200364800 /* WeatherDetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7145C9FF2A8B1F6200364800 /* WeatherDetailCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +60,8 @@
 		7145C9F62A8AE92F00364800 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		7145C9F82A8AEC0400364800 /* SearchWeatherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchWeatherView.swift; sourceTree = "<group>"; };
 		7145C9FB2A8AF12600364800 /* MockNetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockNetworkService.swift; sourceTree = "<group>"; };
+		7145C9FD2A8B10FD00364800 /* ImageFetchingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageFetchingService.swift; sourceTree = "<group>"; };
+		7145C9FF2A8B1F6200364800 /* WeatherDetailCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherDetailCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -176,6 +180,7 @@
 			children = (
 				7145C9E92A8AD7FA00364800 /* APIViewController.swift */,
 				7145C9EB2A8AD84400364800 /* UIKitDataViewController.swift */,
+				7145C9FF2A8B1F6200364800 /* WeatherDetailCell.swift */,
 			);
 			path = UIKit;
 			sourceTree = "<group>";
@@ -184,6 +189,7 @@
 			isa = PBXGroup;
 			children = (
 				7145C9F62A8AE92F00364800 /* NetworkService.swift */,
+				7145C9FD2A8B10FD00364800 /* ImageFetchingService.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -333,8 +339,10 @@
 				7145C9EA2A8AD7FA00364800 /* APIViewController.swift in Sources */,
 				7145C9F42A8AE8DD00364800 /* WeatherData.swift in Sources */,
 				7145C9FC2A8AF12600364800 /* MockNetworkService.swift in Sources */,
+				7145C9FE2A8B10FD00364800 /* ImageFetchingService.swift in Sources */,
 				7145C9EC2A8AD84400364800 /* UIKitDataViewController.swift in Sources */,
 				7145C9F72A8AE92F00364800 /* NetworkService.swift in Sources */,
+				7145CA002A8B1F6200364800 /* WeatherDetailCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

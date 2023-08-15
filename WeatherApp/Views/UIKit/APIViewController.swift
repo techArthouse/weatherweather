@@ -13,8 +13,10 @@ protocol APIViewControllerDelegate: AnyObject {
 }
 
 struct DisplayItem {
-    var key: String
-    var value: String
+    let key: String
+    let value: String
+    var icon: String?
+    var image: UIImage?
 }
 
 class APIViewController: UITableViewController, NetworkServiceDelegate {
@@ -25,6 +27,7 @@ class APIViewController: UITableViewController, NetworkServiceDelegate {
     private var displayItems: [DisplayItem] = []
     
     let networkService: NetworkServiceType
+    let imageFetchingService = ImageFetchingService()
 
     init(networkService: NetworkServiceType) {
         self.networkService = networkService
@@ -41,10 +44,33 @@ class APIViewController: UITableViewController, NetworkServiceDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
+        tableView.register(WeatherDetailCell.self, forCellReuseIdentifier: "WeatherDetailCell")
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 44.0
         #if DEBUG
         populateWithMockData()
         #endif
+        imageFetchingService.imageSubject
+            .sink { [weak self] icon, image in
+                // Find the index of the cell that corresponds to the given icon
+                if let index = self?.displayItems.firstIndex(where: { $0.icon == icon }) { // Assuming icon value corresponds to the display item value
+                    self?.displayItems[index].image = image
+                    // Reload the tableView or the specific cell
+                    let indexPath = IndexPath(row: index, section: 0)
+                    self?.tableView.reloadRows(at: [indexPath], with: .fade)
+                }
+            }
+            .store(in: &cancellables)
+
+
+
+
+        imageFetchingService.errorSubject
+            .sink { icon, error in
+                // Handle any image fetching error.
+                print("Failed to fetch image for icon \(icon): \(error.localizedDescription)")
+            }
+            .store(in: &cancellables)
     }
 
     // Here I just intended to show how existing UIKit framework can still work with swiftui wether its in conjunction or
@@ -75,7 +101,7 @@ class APIViewController: UITableViewController, NetworkServiceDelegate {
     func updateDisplayItems(with weather: WeatherData) {
         displayItems = [
             DisplayItem(key: "City", value: weather.name),
-            DisplayItem(key: "Weather", value: weather.weather.first?.description ?? "N/A"),
+            DisplayItem(key: "Weather", value: weather.weather.first?.description ?? "N/A", icon: weather.weather.first?.icon as? String),
             DisplayItem(key: "Temperature", value: "\(weather.main.temp.kelvinToFahrenheit())°F"),
             DisplayItem(key: "Feels Like", value: "\(weather.main.feels_like.kelvinToFahrenheit())°F"),
             DisplayItem(key: "Temperature Min", value: "\(weather.main.temp_min.kelvinToFahrenheit())°F"),
@@ -101,29 +127,56 @@ class APIViewController: UITableViewController, NetworkServiceDelegate {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "WeatherDetailCell", for: indexPath) as! WeatherDetailCell
 
         let item = displayItems[indexPath.row]
-        cell.textLabel?.text = item.key
+        cell.titleLabel.text = item.key
         
-        // Check for an existing valueLabel or create a new one
-        let valueLabelTag = 1001
-        var valueLabel: UILabel!
-        
-        if let existingLabel = cell.viewWithTag(valueLabelTag) as? UILabel {
-            valueLabel = existingLabel
+        if let iconName = item.icon {
+            if let image = imageFetchingService.cachedImage(for: iconName) {
+                cell.iconImageView.image = image
+                cell.valueLabel.text = item.value
+            } else {
+                cell.iconImageView.image = nil
+                cell.valueLabel.text = item.value
+                imageFetchingService.fetchImage(for: iconName)
+            }
         } else {
-            valueLabel = UILabel(frame: CGRect(x: cell.bounds.width - 150, y: 0, width: 130, height: cell.bounds.height))
-            valueLabel.tag = valueLabelTag
-            valueLabel.textAlignment = .right
-            valueLabel.autoresizingMask = [.flexibleLeftMargin, .flexibleHeight] // to adjust with cell resizing
-            cell.addSubview(valueLabel)
+            cell.iconImageView.image = nil
+            cell.valueLabel.text = item.value
         }
-        
-        valueLabel.text = item.value
 
         return cell
     }
+
+
+    func resize(image: UIImage, to newSize: CGSize) -> UIImage? {
+        UIGraphicsBeginImageContextWithOptions(newSize, false, 0.0)
+        image.draw(in: CGRect(origin: CGPoint.zero, size: newSize))
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return newImage
+    }
+ 
+    func attributedString(with image: UIImage?, text: String) -> NSAttributedString {
+        let fullString = NSMutableAttributedString()
+        
+        if let image = image {
+            let resizedImage = resize(image: image, to: CGSize(width: 34, height: 34)) // Resize to 24x24 or to your desired size
+            
+            let imageAttachment = NSTextAttachment()
+            imageAttachment.image = resizedImage
+            let imageString = NSAttributedString(attachment: imageAttachment)
+            
+            fullString.append(imageString)
+            fullString.append(NSAttributedString(string: "  ")) // Add a little more space between image and text
+        }
+        
+        fullString.append(NSAttributedString(string: text))
+        return fullString
+    }
+
+
 
     // MARK: - NetworkServiceDelegate Methods
     func didReceiveData(_ data: WeatherData) {
@@ -147,7 +200,6 @@ class APIViewController: UITableViewController, NetworkServiceDelegate {
         present(alert, animated: true)
     }
 }
-
 
 extension Double {
     func kelvinToFahrenheit() -> Double {
