@@ -24,7 +24,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "937504EE-7C98-4F64-97BE-118C5F51BF82"
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "WeatherApp/Network/NetworkService.swift"
@@ -87,7 +87,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "F982732F-2B0E-4F7C-9A0A-1F18BA83FF9B"
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "WeatherApp/Network/NetworkService.swift"
@@ -260,16 +260,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "285667F3-26B7-447F-B3B6-5FE84919FCD8"
-            shouldBeEnabled = "No"
+            uuid = "746B089B-236C-4067-9828-FD5BD444A3F5"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "WeatherApp/Views/UIKit/APIViewController.swift"
+            filePath = "WeatherApp/Network/NetworkService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "185"
-            endingLineNumber = "185"
-            landmarkName = "didReceiveData(_:)"
+            startingLineNumber = "26"
+            endingLineNumber = "26"
+            landmarkName = "fetchWeatherData(for:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

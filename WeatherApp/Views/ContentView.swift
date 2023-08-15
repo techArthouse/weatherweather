@@ -8,14 +8,18 @@
 import SwiftUI
 
 struct ContentView: View {
-    let networkService = NetworkService()
+    // Shared network service for the entire app
+    let sharedNetworkService = NetworkService()
 
     var body: some View {
         VStack {
-            SearchWeatherView(networkService: networkService)
-            UIKitDataViewController(networkService: networkService)
+            // Injecting dependency into SearchWeatherView
+            SearchWeatherView(viewModel: SearchWeatherViewModel(networkService: sharedNetworkService))
+            
+            // Injecting dependency into our UIKit wrapper for APIViewController
+            UIKitDataViewController(networkService: sharedNetworkService)
                 .frame(height: 300)
-                .background(.blue)
+                .background(Color.blue)
         }
     }
 }
