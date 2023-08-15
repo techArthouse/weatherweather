@@ -8,14 +8,15 @@
 import SwiftUI
 
 struct ContentView: View {
+    let networkService = NetworkService()
+
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+            SearchWeatherView(networkService: networkService)
+            UIKitDataViewController(networkService: networkService)
+                .frame(height: 300)
+                .background(.blue)
         }
-        .padding()
     }
 }
 
