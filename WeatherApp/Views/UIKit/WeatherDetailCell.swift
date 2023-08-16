@@ -8,6 +8,8 @@
 import Foundation
 import UIKit
 
+// Custom cell for the tables. It lets use place the data in partitions easily manageable and predictable.
+// The main reason was because of the iconImageview needing proper placement that default layout did not streamline
 class WeatherDetailCell: UITableViewCell {
     var titleLabel: UILabel!
     var valueLabel: UILabel!

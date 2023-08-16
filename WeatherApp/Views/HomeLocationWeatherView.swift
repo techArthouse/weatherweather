@@ -8,6 +8,8 @@
 import Foundation
 import SwiftUI
 
+// This view will show the users home location and display large but simple stats. Mainly what's probably most important for the user.
+// Note that this isn't a detailed view like you get when you search for a location explicitly.
 struct HomeLocationWeatherView: View {
     @ObservedObject var viewModel: HomeLocationWeatherViewModel
 
@@ -40,18 +42,10 @@ struct HomeLocationWeatherView: View {
                 .padding()
             }
         }
-//        .background(Color(.systemGray6))
         .cornerRadius(15)
         .padding()
         .onDisappear {
             viewModel.locationManager.stopUpdatingLocation()
         }
-
-
-
-
-//        .onAppear {
-//            viewModel.fetchUserLocationWeather()
-//        }
     }
 }

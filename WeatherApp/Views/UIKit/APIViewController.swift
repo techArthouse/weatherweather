@@ -8,11 +8,15 @@
 import UIKit
 import Combine
 
+// Delegate patter used here to showcase how an existing framework or paradigm commonly used with UIKit and
+// non reactive programming can be preserved in part or entirely while leverageing a more modern framework like
+// SwiftUI and Combine.
 protocol APIViewControllerDelegate: AnyObject {
     func didReceiveWeatherData(data: WeatherData)
     func didUpdateDisplayItems()
 }
 
+// This class will show the results of a search in a table. Using UIKit for reasons stated above.
 class APIViewController: UITableViewController {
     private var viewModel: WeatherViewModel!
     private var cancellables: Set<AnyCancellable> = []
@@ -38,10 +42,6 @@ class APIViewController: UITableViewController {
         tableView.register(WeatherDetailCell.self, forCellReuseIdentifier: "WeatherDetailCell")
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 44.0
-        
-//        #if DEBUG
-//        viewModel.populateWithMockData()
-//        #endif
     }
 
     // MARK: - UITableView DataSource
@@ -59,6 +59,7 @@ class APIViewController: UITableViewController {
         let item = viewModel.displayItems[indexPath.row]
         cell.titleLabel.text = item.key
         
+        // separate process to fetch icons concurrently
         if let iconName = item.icon {
             if let image = viewModel.imageFetchingService.cachedImage(for: iconName) {
                 cell.iconImageView.image = image

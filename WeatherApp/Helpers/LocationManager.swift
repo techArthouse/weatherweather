@@ -8,6 +8,8 @@
 import Foundation
 import CoreLocation
 
+// Standard implementation of LocationManager that exposes descriptive @published variables that clearly define output from locationservices
+// so listeners can take appropriate action on user defined location services.
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     private var locationManager = CLLocationManager()
@@ -17,7 +19,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var userLocation: LocationWrapper?
     
     deinit {
-        print("LocationManager is being deallocated!")
+        print("LocationManager is being deallocated")
     }
 
     override init() {
@@ -25,7 +27,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         self.locationManager.delegate = self
 
         // Only request permission if status is not determined
-        if CLLocationManager.authorizationStatus() == .notDetermined {
+        if locationManager.authorizationStatus == .notDetermined {
             self.locationManager.requestWhenInUseAuthorization()
         } else {
             // If permission has already been granted, start updating location immediately
@@ -65,12 +67,10 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     func stopUpdatingLocation() {
         locationManager.stopUpdatingLocation()
     }
-
-
 }
 
-
-
+// Wrapper used since location isn't equatable and this variable I wanted to use with swiftui's binding vars and methods.
+// Specifically, this let's listen to changes in location in methods such as onChange for a reactive approach.
 struct LocationWrapper: Equatable {
     let location: CLLocation
 

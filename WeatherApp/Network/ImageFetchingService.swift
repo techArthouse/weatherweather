@@ -10,6 +10,9 @@ import Foundation
 import Combine
 import UIKit
 
+// Image fetching class that uses NSCache to save from constant requests. If the icon images library were much larger
+// we might also incorporate the cachDirectory with Filemanager for a longer store of cache but that would have
+// been overkill given the small library of icons. NSCache should suffice.
 class ImageFetchingService {
     private var imageCache = NSCache<NSString, UIImage>()
     private var cancellables: Set<AnyCancellable> = []
@@ -39,8 +42,6 @@ class ImageFetchingService {
                     }
                 })
                 .store(in: &cancellables)
-
-
         }
     }
     

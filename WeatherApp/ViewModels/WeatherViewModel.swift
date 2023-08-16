@@ -8,12 +8,6 @@
 import Foundation
 import Combine
 
-//protocol WeatherViewModelDelegate: AnyObject {
-//    func didReceiveWeatherData(_ data: WeatherData)
-//    func didReceiveError(_ error: Error)
-//}
-
-
 class WeatherViewModel {
     weak var delegate: APIViewControllerDelegate?
 
@@ -36,6 +30,8 @@ class WeatherViewModel {
         print("WeatherViewModel deinit")
     }
 
+    // These binds listen for icon image updates which in this case come in after apicontroller fetches an image it tries to
+    // display in the table. It's a patter of combine reactive programming.
     private func setupBindings() {
         imageFetchingService.imageSubject
             .sink { [weak self] icon, image in
@@ -46,6 +42,7 @@ class WeatherViewModel {
             }
             .store(in: &cancellables)
 
+        // Although error handling isn't fleshed out here it is setup. Any errors are currently handled graciously as failure doesn't result in crash. 
         imageFetchingService.errorSubject
             .sink { icon, error in
                 // Handle any image fetching error.
@@ -54,6 +51,7 @@ class WeatherViewModel {
             .store(in: &cancellables)
     }
 
+    // Used with previews to test views. I took out the areas they're used but this method can easily be leveraged to be used while testing.
     func populateWithMockData() {
         let dummyWeather = WeatherData(
             coord: Coordinate(lon: 0.0, lat: 0.0),
@@ -91,15 +89,9 @@ class WeatherViewModel {
 
         delegate?.didUpdateDisplayItems()
     }
-
-    func fetchWeather(for city: String) {
-        // not certain we still need this
-    }
 }
 
-
-
-
+// This is a remnant of how delegates get used in older architectures without reactive programming.
 extension WeatherViewModel: NetworkServiceDelegate {
     func didReceiveData(_ data: WeatherData) {
         updateDisplayItems(with: data)

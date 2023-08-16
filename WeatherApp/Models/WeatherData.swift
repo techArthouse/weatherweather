@@ -7,6 +7,7 @@
 
 import Foundation
 
+// Models for mapping calls from openmapapi
 struct WeatherData: Codable {
     let coord: Coordinate
     let weather: [Weather]

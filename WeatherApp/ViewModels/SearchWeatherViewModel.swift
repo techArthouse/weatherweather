@@ -10,13 +10,14 @@ import CoreLocation
 import Combine
 import SwiftUI
 
+// Note the published vars that are used to listen for updates in other classes.
 class SearchWeatherViewModel: ObservableObject {
     private let networkService: NetworkServiceType
     private var imageFetchingService: ImageFetchingService
     @Published var searchText: String = ""
     private var cancellables: Set<AnyCancellable> = []
-    @Published var errorWrapper: ErrorWrapper?
-    @Published var userLocationWeather: LocationWeather?
+    @Published var errorWrapper: ErrorWrapper? // See class for details.
+    @Published var userLocationWeather: LocationWeather? // See class for details.
     @Published var userLocationWeatherIcon: Image?
 
     init(networkService: NetworkServiceType) {
@@ -25,6 +26,7 @@ class SearchWeatherViewModel: ObservableObject {
     }
 
     func searchWeather() {
+        guard !searchText.isEmpty else { return }
         networkService.fetchWeatherData(for: searchText)
             .sink(receiveCompletion: { completion in
                 switch completion {
@@ -38,13 +40,11 @@ class SearchWeatherViewModel: ObservableObject {
                     } else {
                         // Handle other errors
                         print("Received a non-API error: \(error)")
-                        // You can also set a generic error message to errorWrapper if you want.
                     }
                 }
             }, receiveValue: { _ in })
             .store(in: &cancellables)
     }
-
     
     // Method used to reverse locate the user after permission to location is granted.
     func searchWeather(at location: CLLocation) {
@@ -65,11 +65,6 @@ class SearchWeatherViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    
-    
-    
-
-    
     func handle(error: APIError) {
         self.errorWrapper = ErrorWrapper(error: error)
         // Reset after a short delay to allow the View to handle it
@@ -79,7 +74,8 @@ class SearchWeatherViewModel: ObservableObject {
     }
 }
 
-
+// A wrapper was necessary as Error is not Equitable so listening in or error variables using swiftui framework doesn't
+// work unless the variable is equatable. In this manner errors can be handled with swiftui binding.
 struct ErrorWrapper: Equatable {
     let error: APIError
 

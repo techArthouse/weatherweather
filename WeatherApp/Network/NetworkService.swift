@@ -22,15 +22,16 @@ protocol NetworkServiceDelegate: AnyObject {
 
 /* Here we use combine for a more reactive approach to how we handle data.
    My intention was to stick to MVVM with swiftui and combine stack while using a mix
-   of mvvm and delegates with uikit as commondly used. 
+   of mvvm and delegates with uikit as commonly used.
+ 
+   Note that while fetchWeatherData and fetchLocalWeatherData are similar, fetchWeatherData is meant to show how swfitui and combine or
+   reactive frameworks can live together. The NetworkServiceDelegate lets us keep parts of our code that may hae an older framework
+   and is used in fetchWeatherData to propogate data in a delegae pattern. While fetchLocalWeatherData entirely makes use a Combine.
  */
 class NetworkService: NetworkServiceType {
 
     let apiKey = "ad1e144e7d20547f2a13b74deca05137" // It's better to keep this secure, but for this project, I'm leaving it here.
     weak var delegate: NetworkServiceDelegate?
-    
-    // We keep a reference to the cancellable object to avoid the pipeline being deallocated.
-    private var cancellables: Set<AnyCancellable> = []
 
     // since we store in canceallables we can expect to discard result is ok.
     @discardableResult
@@ -136,10 +137,9 @@ class NetworkService: NetworkServiceType {
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
-
-
-
     
+    
+    // This method reverse looks up location by using users location through coreLocation
     func fetchLocationName(from location: CLLocation) -> AnyPublisher<LocationData, Error> {
         let apiURL = "https://api.openweathermap.org/geo/1.0/reverse?lat=\(location.coordinate.latitude)&lon=\(location.coordinate.longitude)&limit=1&appid=\(apiKey)"
         

@@ -20,6 +20,7 @@ struct UIKitDataViewController: UIViewControllerRepresentable {
     // track whether data is available
     @Binding var isDataAvailable: Bool
 
+    // Again note injection
     init(networkService: NetworkServiceType, isDataAvailable: Binding<Bool>) {
         self.networkService = networkService
         self._isDataAvailable = isDataAvailable

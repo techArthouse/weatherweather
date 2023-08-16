@@ -16,12 +16,15 @@ class HomeLocationWeatherViewModel: ObservableObject {
     @Published var localWeather: LocationWeather?
     @Published var localWeatherIcon: Image?
     private var cancellables: Set<AnyCancellable> = []
-    @Published var isLoading: Bool = false
+    @Published var isLoading: Bool = false // This demonstrates how loadingview can be implemented but discarded for time.
     @Published var isLocationAccessDenied: Bool = false
     @Published var locationManager: LocationManager
+    
+    // 1 subscriber for each type of var change we're listening on. Here I handle each with their own var for clarity.
     private var userLocationSubscriber: AnyCancellable?
     private var userPermissionsnSubscriber: AnyCancellable?
 
+    // Note the dependecy injection and the binding to published vars.
     init(networkService: NetworkServiceType) {
         self.networkService = networkService
         self.locationManager = LocationManager()
@@ -67,6 +70,8 @@ class HomeLocationWeatherViewModel: ObservableObject {
         
     }
     
+    // Retrieve local weather. Explicitly searchLocalWeather because this viewModel handles calls to network service differently. More
+    // details in networkService.
     func searchLocalWeather(for location: String) {
         isLoading = true
         networkService.fetchLocalWeatherData(for: location)
@@ -85,8 +90,6 @@ class HomeLocationWeatherViewModel: ObservableObject {
                 
                 // Now fetch icon
                 if let iconName = self?.localWeather?.iconName {
-                    
-                    
                     // Subscribe to the imageSubject
                     strongSelf.imageFetchingService.imageSubject
                        .sink { [weak self] iconImagePair in
@@ -99,9 +102,6 @@ class HomeLocationWeatherViewModel: ObservableObject {
                 }
             })
             .store(in: &cancellables)
-
     }
-    
-    
 }
 

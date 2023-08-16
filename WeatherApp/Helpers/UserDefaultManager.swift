@@ -7,6 +7,7 @@
 
 import Foundation
 
+// Simple manager leveraging UserDefaults
 struct UserDefaultsManager {
     static let lastSearchedCityKey = "lastSearchedCityKey"
 

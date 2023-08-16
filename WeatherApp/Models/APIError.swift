@@ -7,6 +7,9 @@
 
 import Foundation
 
+// Custom error capturing. a fleshed out framework would require a longer look at the code but the basis for this
+// is capturing server side errors and propgating them in a way we can handle on the front end
+// for useful feedback.
 struct APIError: Decodable, Error {
     let cod: String?
     let message: String?
