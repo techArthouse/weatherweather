@@ -17,8 +17,6 @@ class SearchWeatherViewModel: ObservableObject {
     @Published var searchText: String = ""
     private var cancellables: Set<AnyCancellable> = []
     @Published var errorWrapper: ErrorWrapper? // See class for details.
-    @Published var userLocationWeather: LocationWeather? // See class for details.
-    @Published var userLocationWeatherIcon: Image?
 
     init(networkService: NetworkServiceType) {
         self.networkService = networkService
