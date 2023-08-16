@@ -43,6 +43,7 @@ class NetworkService: NetworkServiceType {
             return Fail(error: APIError(customDescription: "Bad URL")).eraseToAnyPublisher()
         }
 
+        print("Attempting to fetch data from: \(url)")
         return URLSession.shared.dataTaskPublisher(for: url)
             .tryMap { response -> Data in
                 guard let httpResponse = response.response as? HTTPURLResponse else {
@@ -92,15 +93,23 @@ class NetworkService: NetworkServiceType {
     // Get local weather without passing through delegates. Even though method is similar to fetchWeatherData, this
     // is a demonstration of separation of concerns especially since fetchWeatherData is part of the (theoretical) older flow with delegates.
     func fetchLocalWeatherData(for city: String) -> AnyPublisher<WeatherData, Error> {
+        print("fetchLocalWeatherData called for city: \(city)")
         let encodedCity = city.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? city
         let endpoint = "https://api.openweathermap.org/data/2.5/weather?q=\(encodedCity)&appid=\(apiKey)"
 
+        
         guard let url = URL(string: endpoint) else {
             delegate?.didFailWithError(URLError(.badURL))
             return Fail(error: APIError(customDescription: "Bad URL")).eraseToAnyPublisher()
         }
 
+        print("Attempting to fetch data from: \(url)")
         return URLSession.shared.dataTaskPublisher(for: url)
+            .print("URLSession dataTaskPublisher fetchLocalWeatherData")
+            .mapError { error -> APIError in
+                print("Received an error from URLSession: \(error)") // Step 6
+                return APIError(customDescription: "Failed to fetch data")
+            }
             .tryMap { response -> Data in
                 guard let httpResponse = response.response as? HTTPURLResponse else {
                     throw URLError(.badServerResponse)
@@ -123,6 +132,7 @@ class NetworkService: NetworkServiceType {
                 }
             }
             .decode(type: WeatherData.self, decoder: JSONDecoder())
+            .timeout(.seconds(10), scheduler: DispatchQueue.main)
             .receive(on: DispatchQueue.main)
             .eraseToAnyPublisher()
     }
@@ -138,7 +148,9 @@ class NetworkService: NetworkServiceType {
             return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
         }
 
+        print("Attempting to fetch data from: \(url)")
         return URLSession.shared.dataTaskPublisher(for: url)
+            .print("URLSession dataTaskPublisher fetchLocationName")
             .tryMap { response -> Data in
                 guard let httpResponse = response.response as? HTTPURLResponse,
                       httpResponse.statusCode == 200 else {
@@ -152,5 +164,6 @@ class NetworkService: NetworkServiceType {
             .compactMap { $0 } // Convert optional to non-optional
             .receive(on: DispatchQueue.main) // Ensure we receive on the main thread to update the UI.
             .eraseToAnyPublisher()
+        
     }
 }

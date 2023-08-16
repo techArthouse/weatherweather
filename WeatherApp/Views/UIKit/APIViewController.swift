@@ -16,6 +16,10 @@ protocol APIViewControllerDelegate: AnyObject {
 class APIViewController: UITableViewController {
     private var viewModel: WeatherViewModel!
     private var cancellables: Set<AnyCancellable> = []
+    
+    // Closure to inform the parent when data is available
+    var onDataAvailable: (() -> Void)?
+
 
     // Dependency Injection through the initializer
     init(networkService: NetworkServiceType) {
@@ -76,9 +80,11 @@ class APIViewController: UITableViewController {
 extension APIViewController: APIViewControllerDelegate {
     func didReceiveWeatherData(data: WeatherData) {
         viewModel.updateDisplayItems(with: data)
+        onDataAvailable?()
     }
 
     func didUpdateDisplayItems() {
+        onDataAvailable?()
         tableView.reloadData()
     }
 }

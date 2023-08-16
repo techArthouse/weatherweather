@@ -19,7 +19,6 @@ class SearchWeatherViewModel: ObservableObject {
     @Published var userLocationWeather: LocationWeather?
     @Published var userLocationWeatherIcon: Image?
 
-
     init(networkService: NetworkServiceType) {
         self.networkService = networkService
         self.imageFetchingService = ImageFetchingService()

@@ -7,30 +7,31 @@
 
 import SwiftUI
 import Foundation
+import CoreLocation
 
 struct ContentView: View {
     // Shared network service for the entire app
-    let sharedNetworkService: NetworkService
+    let sharedNetworkService = NetworkService()
     @ObservedObject var searchWeatherViewModel: SearchWeatherViewModel
-    @ObservedObject var homeLocationWeatherViewModel: HomeLocationWeatherViewModel
+    @ObservedObject private var homeLocationWeatherViewModel: HomeLocationWeatherViewModel
+
+//    @ObservedObject var homeLocationWeatherViewModel: HomeLocationWeatherViewModel
     
     // this determines when to show alert
     @State private var showErrorAlert = false
 
     var firstLoad: Bool = true
-    
-    // Use @StateObject for locationManager to handle when location is aqcuired
-    @StateObject private var locationManager = LocationManager()
+    @State private var isDataAvailable: Bool = false
 
     // You'll see dependency injection used for the network service
     // for better testability. You can see i used it in some areas with the swiftui's preview framework.
     // It's also used here to leverage calling search when autoloading last valid search.
     // doing so here will
     init() {
-        sharedNetworkService = NetworkService()
-        searchWeatherViewModel = SearchWeatherViewModel(networkService: sharedNetworkService)
-        homeLocationWeatherViewModel = HomeLocationWeatherViewModel(networkService: sharedNetworkService)
+        self.searchWeatherViewModel = SearchWeatherViewModel(networkService: sharedNetworkService)
+        self.homeLocationWeatherViewModel =  HomeLocationWeatherViewModel(networkService: sharedNetworkService)
     }
+
 
     var body: some View {
         VStack {
@@ -40,12 +41,12 @@ struct ContentView: View {
 
             Spacer()
 
-            // Injecting dependency into our UIKit wrapper for APIViewController
-            UIKitDataViewController(networkService: sharedNetworkService)
-                .frame(maxHeight: .infinity) // This will make the view take all available space.
-                .background(RoundedRectangle(cornerRadius: 15).stroke(Color.gray, lineWidth: 2)) // This gives boundary.
-                .padding(.horizontal) // Adds horizontal padding for a better look.
             
+            // Injecting dependency into our UIKit wrapper for APIViewController
+            UIKitDataViewController(networkService: sharedNetworkService, isDataAvailable: $isDataAvailable)
+                .frame(maxHeight: isDataAvailable ? .infinity: .zero)
+                .background(RoundedRectangle(cornerRadius: 15).stroke(Color.gray, lineWidth: 2))
+                .padding(.horizontal)
             HomeLocationWeatherView(viewModel: homeLocationWeatherViewModel)
 //            if let locationWeather = searchWeatherViewModel.userLocationWeather {
 //                HomeLocationWeatherView(cityName: locationWeather.cityName,
@@ -57,14 +58,15 @@ struct ContentView: View {
         .onAppear {
             // will load last valid city searched
             loadLastSearchedCity()
+
         }
         // Observe changes in userLocation and search weather
         // This will only occur once. Check LocationManager for details
-        .onChange(of: locationManager.userLocation) { newLocationWrapper in
-            if let locationWrapper = newLocationWrapper {
-                homeLocationWeatherViewModel.fetchUserLocationWeather(for: locationWrapper.location)
-            }
-        }
+//        .onChange(of: locationManager.userLocation) { newLocationWrapper in
+//            if let locationWrapper = newLocationWrapper {
+//                homeLocationWeatherViewModel.fetchUserLocationWeather(for: locationWrapper.location)
+//            }
+//        }
 
         // Observe changes in error property and update showErrorAlert accordingly
         .onChange(of: searchWeatherViewModel.errorWrapper) { newErrorWrapper in

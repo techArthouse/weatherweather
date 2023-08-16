@@ -31,6 +31,10 @@ class WeatherViewModel {
         }
         setupBindings()
     }
+    
+    deinit {
+        print("WeatherViewModel deinit")
+    }
 
     private func setupBindings() {
         imageFetchingService.imageSubject

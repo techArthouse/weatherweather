@@ -11,27 +11,62 @@ import CoreLocation
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     private var locationManager = CLLocationManager()
+    @Published var isLocationAccessDenied: Bool = false
     
     // published to be observed in contentview or other bound classes to notify when we get location.
     @Published var userLocation: LocationWrapper?
+    
+    deinit {
+        print("LocationManager is being deallocated!")
+    }
 
     override init() {
         super.init()
         self.locationManager.delegate = self
-        self.locationManager.requestWhenInUseAuthorization()
-        self.locationManager.startUpdatingLocation()
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.last {
-            self.userLocation = LocationWrapper(location: location)
-            self.locationManager.stopUpdatingLocation()
+
+        // Only request permission if status is not determined
+        if CLLocationManager.authorizationStatus() == .notDetermined {
+            self.locationManager.requestWhenInUseAuthorization()
+        } else {
+            // If permission has already been granted, start updating location immediately
+            self.startUpdatingLocation()
         }
     }
+
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        switch status {
+        case .denied:
+            isLocationAccessDenied = true
+        case .authorizedAlways, .authorizedWhenInUse:
+            isLocationAccessDenied = false
+            startUpdatingLocation()
+        default:
+            // Handle other cases if needed
+            break
+        }
+    }
+
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.last else { return }
+        print("LocationManager received location: \(location)")
+        userLocation = LocationWrapper(location: location)
+    }
+
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("Failed to get user location: \(error.localizedDescription)")
     }
+    
+    func startUpdatingLocation() {
+        locationManager.startUpdatingLocation()
+    }
+    
+    func stopUpdatingLocation() {
+        locationManager.stopUpdatingLocation()
+    }
+
+
 }
 
 
