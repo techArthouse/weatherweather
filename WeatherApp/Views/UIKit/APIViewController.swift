@@ -35,9 +35,9 @@ class APIViewController: UITableViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 44.0
         
-        #if DEBUG
-        viewModel.populateWithMockData()
-        #endif
+//        #if DEBUG
+//        viewModel.populateWithMockData()
+//        #endif
     }
 
     // MARK: - UITableView DataSource

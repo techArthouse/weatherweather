@@ -99,6 +99,7 @@ class WeatherViewModel {
 extension WeatherViewModel: NetworkServiceDelegate {
     func didReceiveData(_ data: WeatherData) {
         updateDisplayItems(with: data)
+        UserDefaultsManager.saveLastSearchedCity(city: data.name)
     }
     
     func didFailWithError(_ error: Error) {

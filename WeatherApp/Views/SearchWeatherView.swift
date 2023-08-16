@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct SearchWeatherView: View {
-    @State private var searchText = ""
     @ObservedObject var viewModel: SearchWeatherViewModel
 
     // Dependency injection through the initializer
@@ -18,11 +17,11 @@ struct SearchWeatherView: View {
     
     var body: some View {
         VStack {
-            TextField("Enter city name...", text: $searchText)
+            TextField("Enter city name...", text: $viewModel.searchText)
                 .padding(10)
                 .border(Color.gray)
             Button("Search") {
-                viewModel.searchWeather(for: searchText)
+                viewModel.searchWeather()
             }
             .padding()
         }
