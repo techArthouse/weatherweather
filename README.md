@@ -36,3 +36,7 @@ App follows requirements in that:
 
 -- has reverse lookup of user location to display weather. 
 
+Quick overview video demonstration: 
+
+https://github.com/techArthouse/weatherweather/assets/40276547/d0b46d09-4ca2-4f86-8bda-336470850ab5
+
